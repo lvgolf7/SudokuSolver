@@ -1,14 +1,15 @@
 from tkinter import Tk, Canvas, Entry, Button, END, Label
 
-
 root = Tk()
 root.title("Sudoku Solver")
 root.resizable(False, False)
-root.iconbitmap("icon.ico")
+try:
+    root.iconbitmap("icon.ico")
+except Exception as e:
+    print(f"Error loading icon: {e}")
 
 canvas = Canvas(root, width=450, height=500, bg="lightgrey")
 canvas.pack()
-
 
 # Constants for Sudoku grid values
 GRID_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -21,8 +22,9 @@ def validate_input(new_text):
     return False
 
 
-# Class representing the GUI for a Sudoku tile.  Allow user to input values.
-class Tile_GUI:
+class TileGui:
+    """Class representing the GUI for a Sudoku tile."""
+
     def __init__(self, x, y, v, parent):
         self.x = x
         self.y = y
@@ -41,8 +43,9 @@ class Tile_GUI:
         self.entry.config(validate="key", validatecommand=self.vcmd)
 
 
-# Class representing a Sudoku tile
 class Tile:
+    """Class representing a Sudoku tile."""
+
     def __init__(self, x, y, q, v):
         self.x = x
         self.y = y
@@ -50,9 +53,8 @@ class Tile:
         self.value = v
 
 
-# Setup the initial grid
 def setup_tiles():
-    # Set each tile to have all possible values
+    """Set each tile to have all possible values."""
     tiles = []
     for i in range(9):
         row = []
@@ -65,7 +67,7 @@ def setup_tiles():
     for row in tiles:
         gui_row = []
         for tile in row:
-            gui_row.append(Tile_GUI(tile.x, tile.y, 0, root))
+            gui_row.append(TileGui(tile.x, tile.y, 0, root))
         gui.append(gui_row)
     # Draw the outline for the quadrants
     canvas.create_line(0, 50, 450, 50, fill="black", width=4)
@@ -80,13 +82,27 @@ def setup_tiles():
     return tiles, gui
 
 
-# Helper to copy the grid
 def copy_grid(tiles):
+    """Create a copy of the Sudoku grid.
+
+    Args:
+        tiles (list): A 2D list of Tile objects representing the Sudoku grid.
+
+    Returns:
+        list: A copy of the grid.
+    """
     return [[Tile(t.x, t.y, t.quadrant, t.value.copy()) for t in row] for row in tiles]
 
 
-# Recursive backtracking solver
 def solve(tiles):
+    """Solve the Sudoku puzzle using backtracking.
+
+    Args:
+        tiles (list): A 2D list of Tile objects representing the Sudoku grid.
+
+    Returns:
+        boolean: True if the puzzle is solved, False otherwise.
+    """
     for x in range(9):
         for y in range(9):
             t = tiles[x][y]
@@ -112,8 +128,16 @@ def solve(tiles):
     return True
 
 
-# Get input values from the GUI
 def get_starting_values(cell, gui):
+    """Get the starting values from the GUI and set them in the cell.
+
+    Args:
+        cell (list): A 2D list of Tile objects representing the Sudoku grid.
+        gui (list): A 2D list of TileGui objects representing the values in the GUI.
+
+    Returns:
+        list: The updated Sudoku grid with starting values.
+    """
     for y in range(9):
         for x in range(9):
             v = int(gui[x][y].entry.get() or 0)
@@ -122,8 +146,15 @@ def get_starting_values(cell, gui):
     return cell
 
 
-# Remove impossible values
 def remove_values(tiles):
+    """Remove impossible values from the Sudoku grid. Cycles through each row, column and quadrant removing values that cannot be placed.
+
+    Args:
+        tiles (list): A 2D list of Tile objects representing the Sudoku grid.
+
+    Returns:
+        list: The updated Sudoku grid with impossible values removed.
+    """
     for x in range(9):
         for y in range(9):
             t = tiles[x][y]
