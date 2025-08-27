@@ -7,16 +7,23 @@ try:
     root.iconbitmap("icon.ico")
 except Exception as e:
     print(f"Error loading icon: {e}")
+# Constants
+GRID_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+BACKGROUND_COLOR = "lightblue"
 
-canvas = Canvas(root, width=450, height=500, bg="lightgrey")
+canvas = Canvas(root, width=450, height=500, bg=BACKGROUND_COLOR)
 canvas.pack()
 
-# Constants for Sudoku grid values
-GRID_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-
-# Check for empty input (to allow deletion) or a single digit
 def validate_input(new_text):
+    """Validate the input for a Sudoku tile.
+
+    Args:
+        new_text (str): The text entered in the Sudoku tile.
+
+    Returns:
+        bool: True if the input is valid, False otherwise.
+    """
     if new_text == "" or (new_text.isdigit() and len(new_text) == 1):
         return True
     return False
@@ -71,12 +78,12 @@ def setup_tiles():
         gui.append(gui_row)
     # Draw the outline for the quadrants
     canvas.create_line(0, 50, 450, 50, fill="black", width=4)
-    canvas.create_line(0, 200, 450, 200, fill="black", width=4)
-    canvas.create_line(0, 350, 450, 350, fill="black", width=4)
+    canvas.create_line(0, 202, 450, 202, fill="black", width=4)
+    canvas.create_line(0, 352, 450, 352, fill="black", width=4)
     canvas.create_line(0, 500, 450, 500, fill="black", width=4)
     canvas.create_line(3, 50, 3, 500, fill="black", width=4)
-    canvas.create_line(150, 50, 150, 500, fill="black", width=4)
-    canvas.create_line(300, 50, 300, 500, fill="black", width=4)
+    canvas.create_line(152, 50, 152, 500, fill="black", width=4)
+    canvas.create_line(302, 50, 302, 500, fill="black", width=4)
     canvas.create_line(450, 50, 450, 500, fill="black", width=4)
 
     return tiles, gui
@@ -199,7 +206,7 @@ def clear_board(cell, gui):
             cell[i][j].value = GRID_VALUES.copy()
             if gui[i][j].entry is not None:
                 gui[i][j].entry.delete(0, END)
-    message_label.config(text="")
+    message_label.config(text="Enter known values")
 
 
 cell, gui = setup_tiles()
@@ -212,7 +219,9 @@ clear_button = Button(
     root, text="Clear", command=lambda: clear_board(cell, gui), width=10
 )
 clear_button.place(x=330, y=10)
-message_label = Label(root, text="", bg="lightgrey", font=("Arial", 16))
+message_label = Label(
+    root, text="Enter known values", bg=BACKGROUND_COLOR, font=("Arial", 16)
+)
 message_label.place(relx=0.5, y=20, anchor="center")
 
 
